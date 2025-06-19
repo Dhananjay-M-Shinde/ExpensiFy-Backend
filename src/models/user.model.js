@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
 const userSchema = new mongoose.Schema(
@@ -24,20 +24,10 @@ const userSchema = new mongoose.Schema(
             required: true,
             trim: true,
             index: true // this should only be use when you are using this field heavily in search
-        },
-        avatar: {
-            type: String, // coudinary url
+        },        avatar: {
+            type: String, // cloudinary url
             required: true
         },
-        coverImage: {
-            type: String, // coudinary url
-        },
-        watchHistory: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "Video"
-            }
-        ],
         password: {
             type: String,
             required : [true, "password is required"]

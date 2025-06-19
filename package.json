@@ -1,7 +1,7 @@
 {
   "name": "expensify-backend",
   "version": "1.0.0",
-  "description": "developing backend for yt clone",
+  "description": "ExpensiFy - Personal Expense Management Backend API",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -20,7 +20,7 @@
     "prettier": "^3.2.5"
   },
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "cloudinary": "^2.0.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",

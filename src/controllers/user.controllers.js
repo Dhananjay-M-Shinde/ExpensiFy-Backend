@@ -60,19 +60,10 @@ const registerUser = asyncHandler( async (req, res) =>{
     
         if(existedUser){
             throw new apiError(409, "User already exist with given email or userName")
-        }
-    console.log("localpath");
-        // console.log("this is req.files", req.files, req.files?.avatar[0]?.path, req.files?.coverImage[0]?.path);
-        const avatarLocalPath = req.files?.avatar[0]?.path;
-        console.log("coverpath");
-        // console.log(avatarLocalPath);
-        let coverImageLocalPath = req.files?.coverImage[0]?.path;
-
-        // if user don't provide coverImage then to handle undefine error we can do below check
-        // let coverImageLocalPath;
-        if(req.files && Array.isArray(req.files?.coverImage) && req.files?.coverImage.length > 0){
-            coverImageLocalPath = req.files?.coverImage[0]?.path
-        }
+        }    console.log("localpath");
+        // console.log("this is req.file", req.file);
+        const avatarLocalPath = req.file?.path;
+        console.log("avatar path:", avatarLocalPath);
     
         //checking whether avatar file is available or not
         if(!avatarLocalPath){
@@ -80,7 +71,6 @@ const registerUser = asyncHandler( async (req, res) =>{
         }
     
         const avatar = await uploadOnCloudinary(avatarLocalPath)
-        const coverImage = await uploadOnCloudinary(coverImageLocalPath)
     
         // now checking whether it is uploaded to cloudinary or not
         console.log("avatar");
@@ -91,7 +81,6 @@ const registerUser = asyncHandler( async (req, res) =>{
         const user = await User.create({
             fullName,
             avatar: avatar,
-            coverImage: coverImage || "",
             email, 
             password,
             userName: userName.toLowerCase()
@@ -346,48 +335,12 @@ const updateUserAvatar = asyncHandler(async (req, res) =>{
     
         return res
         .status(200)
-        .json(new apiResponse(200,avatar, "avatar updated successfully"))
-    } catch (error) {
+        .json(new apiResponse(200,avatar, "avatar updated successfully"))    } catch (error) {
         res
         .status(error.statusCode || 500)
         .json({statusCode: error.statusCode, error:{message: error.message || "something went wrong"}})
     }
 })
-
-const updateUserCoverImage = asyncHandler(async (req, res) =>{
-    try {
-        const coverImageLoaclPath = req.file?.path;
-    
-        if(!coverImageLoaclPath){
-            throw new apiError(400, "cover image file is missing")
-        }
-    
-        const coverImage = await uploadOnCloudinary(coverImageLoaclPath)
-    
-        if(!coverImage){
-            throw new apiError(400, "Error while uploading cover image file to cloudinary")
-        }
-        
-        const user = await User.findByIdAndUpdate(
-            req.user?._id,
-            {
-                $set: {
-                    coverImage: coverImage
-                }
-            },
-            {new:true}
-        ).select("-password")
-    
-        return res
-        .status(200)
-        .json(new apiResponse(200, coverImage, "cover image updated successfully"))
-    } catch (error) {
-        res
-        .status(error.statusCode || 500)
-        .json({statusCode: error.statusCode, error:{message: error.message || "something went wrong"}})
-    }
-})
-
 
 export {
     registerUser,
@@ -397,6 +350,5 @@ export {
     changeCurrentPassword,
     getCurrentUser,
     updateAccountDetails,
-    updateUserAvatar,
-    updateUserCoverImage
+    updateUserAvatar
 }
