@@ -47,14 +47,112 @@ A robust Node.js/Express.js REST API for personal expense management with user a
    npm install
    ```
 
+# ExpensiFy Backend
+
+A robust, production-ready Node.js/Express.js REST API for personal expense management with comprehensive user authentication, file uploads, and advanced analytics.
+
+## 🌟 Features
+
+- **JWT Authentication**: Secure login/logout with access and refresh token mechanism
+- **User Management**: Complete user profile management with avatar uploads
+- **File Upload**: Multi-storage support (Cloudinary + local fallback) for avatars
+- **Expense Management**: Full CRUD operations with category tracking
+- **Analytics API**: Daywise expense aggregation for data visualization
+- **Data Validation**: Comprehensive input validation and error handling
+- **Security**: Password hashing, token refresh, protected routes, and CORS
+- **Modular Architecture**: Clean separation of concerns with MVC pattern
+
+## 🔧 Tech Stack
+
+- **Node.js**: JavaScript runtime environment
+- **Express.js**: Fast, unopinionated web framework
+- **MongoDB**: NoSQL database with Mongoose ODM
+- **JWT**: JSON Web Tokens for authentication
+- **Cloudinary**: Cloud-based image storage and manipulation
+- **Multer**: Multipart form data handling for file uploads
+- **bcryptjs**: Password hashing and verification
+- **CORS**: Cross-Origin Resource Sharing support
+
+## 📊 API Endpoints
+
+### Authentication Routes (`/api/v1/users/`)
+- `POST /register` - User registration with avatar upload
+- `POST /login` - User login with JWT token generation
+- `POST /logout` - User logout and token invalidation
+- `POST /refresh-token` - Refresh expired access tokens
+- `POST /change-password` - Change user password with validation
+- `GET /current-user` - Get current authenticated user details
+- `PATCH /update-account` - Update user profile information
+- `PATCH /avatar` - Update user avatar with file upload
+
+### Expense Routes (`/api/v1/expenses/`)
+- `GET /` - Get all expenses for authenticated user
+- `POST /` - Create new expense entry
+- `GET /:id` - Get specific expense by ID
+- `PATCH /:id` - Update existing expense
+- `DELETE /:id` - Delete expense entry
+- `GET /daywise-expenses` - Get aggregated daywise expense data for analytics
+
+## 🏗️ Project Structure
+
+```
+src/
+├── controllers/        # Request handlers and business logic
+│   ├── user.controllers.js
+│   └── expense.controllers.js
+├── middlewares/        # Custom middleware functions
+│   ├── auth.middlewares.js
+│   └── multer.middlewares.js
+├── models/            # Database models and schemas
+│   ├── user.model.js
+│   └── expense.model.js
+├── routes/            # API route definitions
+│   ├── user.routes.js
+│   └── expense.routes.js
+├── utils/             # Utility functions and helpers
+│   ├── apiError.js
+│   ├── apiResponse.js
+│   ├── asyncHandler.js
+│   └── cloudinary.js
+├── db/               # Database connection
+│   └── index.js
+├── constants.js      # Application constants
+├── app.js           # Express app configuration
+└── index.js         # Server entry point
+```
+
+## 🚀 Prerequisites
+
+- Node.js (version 16 or higher)
+- MongoDB (local or cloud instance)
+- npm or yarn package manager
+- Cloudinary account (optional - has local fallback)
+
+## 📦 Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd ExpensiFy-Backend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
 3. Create a `.env` file with the following variables:
    ```env
    PORT=8000
-   MONGO_URL=mongodb://localhost:27017
-   ACCESS_TOKEN_SECRET=your_access_token_secret
+   MONGODB_URI=mongodb://localhost:27017/expensify
+   
+   # JWT Configuration
+   ACCESS_TOKEN_SECRET=your_super_secret_access_token_key
    ACCESS_TOKEN_EXPIRY=1d
-   REFRESH_TOKEN_SECRET=your_refresh_token_secret
+   REFRESH_TOKEN_SECRET=your_super_secret_refresh_token_key
    REFRESH_TOKEN_EXPIRY=10d
+   
+   # Cloudinary Configuration (Optional)
    CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
    CLOUDINARY_API_KEY=your_cloudinary_api_key
    CLOUDINARY_API_SECRET=your_cloudinary_api_secret
@@ -65,49 +163,108 @@ A robust Node.js/Express.js REST API for personal expense management with user a
    npm run dev
    ```
 
-## Data Models
+5. The server will start on `http://localhost:8000`
+
+## 📝 Available Scripts
+
+- `npm run dev` - Start development server with nodemon
+- `npm start` - Start production server
+- `npm test` - Run test suite (if implemented)
+
+## 💾 Data Models
 
 ### User Model
-- `userName`: Unique username
-- `email`: User email address
-- `fullName`: User's full name
-- `avatar`: Profile picture URL (Cloudinary)
-- `password`: Hashed password
-- `refreshToken`: JWT refresh token
+```javascript
+{
+  userName: String (unique, required),
+  email: String (unique, required),
+  fullName: String (required),
+  avatar: String (Cloudinary URL or local path),
+  password: String (hashed, required),
+  refreshToken: String,
+  timestamps: true
+}
+```
 
 ### Expense Model
-- `day`: Day of the week
-- `time`: Time of expense
-- `date`: Date of expense
-- `category`: Expense category
-- `amount`: Expense amount
-- `user`: Reference to User model
+```javascript
+{
+  day: String (required),
+  time: String (required),
+  date: Date (required),
+  category: String (required),
+  amount: Number (required),
+  user: ObjectId (ref: 'User', required),
+  timestamps: true
+}
+```
 
-## Authentication Flow
+## 🔐 Authentication Flow
 
-1. User registers with avatar upload
-2. User logs in and receives access/refresh tokens
-3. Access token is used for authenticated requests
-4. Refresh token is used to get new access tokens when expired
-5. Logout invalidates tokens
+1. **Registration**: User registers with avatar upload → Profile created with hashed password
+2. **Login**: User provides credentials → JWT tokens generated and returned
+3. **Protected Routes**: Access token validated via middleware
+4. **Token Refresh**: When access token expires, refresh token generates new access token
+5. **Logout**: Both tokens invalidated and removed from database
 
-## Error Handling
+## 🛡️ Security Features
 
-The API uses custom error classes and middleware for consistent error responses:
-- `apiError`: Custom error class with status codes
-- `apiResponse`: Standardized response format
-- `asyncHandler`: Wrapper for async route handlers
+- **Password Security**: bcryptjs hashing with salt rounds
+- **JWT Implementation**: Secure token-based authentication
+- **Token Refresh**: Automatic token renewal mechanism
+- **Input Validation**: Comprehensive request validation
+- **Error Handling**: Secure error responses without sensitive data exposure
+- **CORS Configuration**: Controlled cross-origin access
+- **File Upload Security**: Validated file types and sizes
 
-## Security Features
+## 📈 Analytics Features
 
-- Password hashing with bcrypt
-- JWT token-based authentication
-- Token refresh mechanism
-- Input validation and sanitization
-- CORS enabled for cross-origin requests
+### Daywise Expense Aggregation
+The `/daywise-expenses` endpoint provides:
+- Daily expense totals
+- Transaction counts per day
+- Category breakdowns
+- Date range filtering
+- Aggregated statistics for data visualization
 
-## Development
+## 🔧 Advanced Features
 
-- Uses ES6 modules
-- Nodemon for development auto-restart
-- Modular architecture with clear separation of concerns
+### File Upload System
+- **Dual Storage**: Cloudinary (primary) with local storage fallback
+- **Image Processing**: Automatic optimization and format conversion
+- **Error Handling**: Graceful fallback when cloud storage is unavailable
+- **File Validation**: Type and size restrictions for security
+
+### Error Handling
+- **Custom Error Classes**: Structured error responses
+- **Async Handler**: Centralized error catching for async operations
+- **Validation Errors**: Detailed validation error messages
+- **HTTP Status Codes**: Proper status code implementation
+
+### Database Operations
+- **Mongoose ODM**: Schema validation and middleware
+- **Aggregation Pipelines**: Complex data queries for analytics
+- **Indexing**: Optimized database queries
+- **Relationship Management**: User-expense data relationships
+
+## 🌍 Environment Configuration
+
+### Development
+- Detailed error messages
+- Request logging
+- Auto-restart with nodemon
+- Local file storage fallback
+
+### Production
+- Optimized error handling
+- Security headers
+- Environment-based configuration
+- Cloud storage integration
+
+## 🚀 Deployment Ready
+
+- Environment variable configuration
+- Production error handling
+- Scalable architecture
+- Docker containerization support
+- Cloud deployment ready
