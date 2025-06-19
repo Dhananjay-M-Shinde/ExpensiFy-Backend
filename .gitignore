@@ -22,6 +22,8 @@ dist-ssr
 # Upload directories
 public/temp/*
 !public/temp/.gitkeep
+public/uploads/*
+!public/uploads/.gitkeep
 
 # Database
 *.db

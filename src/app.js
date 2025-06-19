@@ -8,8 +8,9 @@ app.use(cors())
 
 app.use(express.json({limit:"50mb"}))
 app.use(express.urlencoded({extended: true, limit: "50mb"}))
-// app.use(express.static("public"))
+app.use(express.static("public"))
 app.use("/upload", express.static('public/temp'))
+app.use("/uploads", express.static('public/uploads'))
 app.use(cookieParser())
 
 

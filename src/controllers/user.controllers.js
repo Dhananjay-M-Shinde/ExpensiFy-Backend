@@ -330,12 +330,11 @@ const updateUserAvatar = asyncHandler(async (req, res) =>{
                     avatar: avatar
                 } 
             },
-            {new:true}
-        ).select("-password")
+            {new:true}        ).select("-password")
     
         return res
         .status(200)
-        .json(new apiResponse(200,avatar, "avatar updated successfully"))    } catch (error) {
+        .json(new apiResponse(200, user, "avatar updated successfully"))} catch (error) {
         res
         .status(error.statusCode || 500)
         .json({statusCode: error.statusCode, error:{message: error.message || "something went wrong"}})
